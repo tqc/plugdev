@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+"use strict";
 var fs = require('fs');
 var path = require('path');
 var xmldoc = require('xmldoc');
@@ -22,7 +23,7 @@ function loadPluginConfig(pluginFile) {
     var result = {};
     var pluginXml = new xmldoc.XmlDocument(fs.readFileSync(pluginFile));
     result.name = pluginXml.childNamed("name").val;
-    result.id = pluginXml.attr["id"];
+    result.id = pluginXml.attr.id;
     result.jsFiles = [];
     result.platforms = {};
 
@@ -54,7 +55,7 @@ function loadPluginConfig(pluginFile) {
 
 
 
-    })
+    });
 
 
     return result;
@@ -75,12 +76,12 @@ if (process.argv[2] == "link") {
 
     var pluginConfig = loadPluginConfig(path.resolve(process.cwd(), "plugin.xml"));
 
-    console.log("Linking plugin " + pluginConfig.name + " (" + pluginConfig.id + ")")
+    console.log("Linking plugin " + pluginConfig.name + " (" + pluginConfig.id + ")");
     plugdevConfig.linkedPlugins[pluginConfig.id] = {
         id: pluginConfig.id,
         name: pluginConfig.name,
         path: process.cwd()
-    }
+    };
 
     fs.writeFileSync(plugdevConfigPath, JSON.stringify(plugdevConfig, null, 4));
 
@@ -95,15 +96,15 @@ if (process.argv[2] == "link") {
     var files = fs.readdirSync(path.resolve(process.cwd(), "plugins"));
 
     for (var i = 0; i < files.length; i++) {
-        var pc = plugdevConfig.linkedPlugins[files[i]]
+        var pc = plugdevConfig.linkedPlugins[files[i]];
         if (pc) {
-            console.log("Found plugin to sync - " + pc.name + " (" + pc.id + ")")
+            console.log("Found plugin to sync - " + pc.name + " (" + pc.id + ")");
             pluginsToSync.push(pc);
         }
     }
 
-    if (pluginsToSync.length == 0) {
-        console.log("No linked plugins found.")
+    if (pluginsToSync.length === 0) {
+        console.log("No linked plugins found.");
         return;
     }
 
@@ -114,7 +115,7 @@ if (process.argv[2] == "link") {
         var fpc = loadPluginConfig(path.resolve(pc.path, "plugin.xml"));
         console.log(JSON.stringify(fpc, null, 4));
 
-        // check if any of the native plugin files in the app project have changed and copy back if necessary 
+        // check if any of the native plugin files in the app project have changed and copy back if necessary
 
 
         // clobber plugins/pluginid with files from the dev folder

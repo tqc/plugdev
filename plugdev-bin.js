@@ -5,6 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var xmldoc = require('xmldoc');
 var ncp = require("ncp").ncp;
+var crypto = require('crypto');
 
 
 var pkg = require(path.join(__dirname, 'package.json'));
@@ -91,6 +92,12 @@ if (process.argv[2] == "link") {
         console.log("Cordova app not found");
         return;
     }
+
+    var plugDevLogPath = process.cwd() + "/plugdev-log.json";
+
+    var genlog = {};
+    if (fs.existsSync(plugDevLogPath)) genlog = JSON.parse(fs.readFileSync(plugDevLogPath, "utf8"));
+
     var pluginsToSync = [];
 
     var files = fs.readdirSync(path.resolve(process.cwd(), "plugins"));
@@ -108,33 +115,74 @@ if (process.argv[2] == "link") {
         return;
     }
 
-    var loopfn = function(i) {
-        if (i >= pluginsToSync.length) return;
+    var loopfn = function(i, finished) {
+        if (i >= pluginsToSync.length) return finished();
         var pc = pluginsToSync[i];
-
+        var pluginHistory = genlog[pc.id] = genlog[pc.id] || {};
         var fpc = loadPluginConfig(path.resolve(pc.path, "plugin.xml"));
         console.log(JSON.stringify(fpc, null, 4));
+
+        for (var j = 0; j < fpc.jsFiles.length; j++) {
+            var jsf = fpc.jsFiles[j];
+            var fileHistory = pluginHistory[jsf] = pluginHistory[jsf] || {};
+
+            // todo: get paths
+            var sourcePath = "";
+            var targetPath = "";
+
+            var sourceHash = fs.existsSync(sourcePath) ? crypto.createHash('sha1').update(fs.readFileSync(sourcePath, "utf8")).digest('hex') : undefined;
+            var targetHash = fs.existsSync(targetPath) ? crypto.createHash('sha1').update(fs.readFileSync(targetPath, "utf8")).digest('hex') : undefined;
+
+            if (!sourceHash) {
+                console.warn("Missing source file " + sourcePath);
+            } else if (sourceHash == targetHash) {
+                // nothing changed, no need to do anything
+                fileHistory.source = sourceHash;
+                fileHistory.target = targetHash;
+            } else if (sourceHash && !targetHash) {
+                // todo: target is missing or deleted - replace from source
+                console.log("target missing - " + sourcePath);
+                //fileHistory.source = fileHistory.target = sourceHash;
+            } else if (targetHash != fileHistory.targetHash && sourceHash != fileHistory.sourceHash) {
+                // both changed - skip update
+                console.error("Conflicting change in " + targetPath + " - not updated");
+            } else if (targetHash != fileHistory.targetHash) {
+                // todo:  target changed - copy back to source
+                console.log("Target changed - " + targetPath);
+                //fileHistory.source = fileHistory.target = targetHash;
+            } else if (sourceHash != fileHistory.sourceHash) {
+                // todo: source changed - copy to target
+                console.log("Source changed - " + sourcePath);
+                //fileHistory.source = fileHistory.target = sourceHash;
+            }
+        }
 
         // check if any of the native plugin files in the app project have changed and copy back if necessary
 
 
-        // clobber plugins/pluginid with files from the dev folder
 
+        // after retrieving changes we can clobber plugins/pluginid with files from the dev folder
+
+        // todo: restore this after testing two way updates 
+        /*
         ncp(pc.path, path.resolve(process.cwd(), "plugins", pc.id), {
             clobber: true
         }, function() {
+*/
 
-
-            loopfn(i + 1);
-
+        loopfn(i + 1, finished);
+        /*
         });
-
+*/
         // update files in native app project
 
 
 
     };
-    loopfn(0);
+    loopfn(0, function() {
+        fs.writeFileSync(plugDevLogPath, JSON.stringify(genlog, null, 4));
+
+    });
 
 
 

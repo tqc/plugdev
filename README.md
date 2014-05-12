@@ -30,8 +30,14 @@ This will detect that a plugin matching the one linked has been added to the pro
 
 The plugin sync process will produce an error if both the app and plugin versions of a file have changed.
 
-The tool only handles changes to existing files. For more extensive changes, use the cordova update process:
+For iOS native files, the sync will include the copy in the platform folder as well as the one in plugins since this is the one that shows up in xcode and is most likely to change. There is no attempt to do the same for the platform www folder, since changing anything in there is asking for trouble.
+
+The tool only handles changes to files included in plugin.xml. For more extensive changes, use the cordova update process:
 
 cordova plugin rm pluginname
 cordova plugin add pluginname
+
+## Development Status
+
+This is a work in progress. Currently it handles javascript (js-module) and ios native files assuming they are in the default location. Other platforms should be easy to add, but I'm not working on any android apps at the moment.
 

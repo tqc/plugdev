@@ -1,22 +1,28 @@
 {
-  "author": "Tom Clarkson ",
-  "name": "cordova-plugdev",
-  "description": "A tool to take the pain out of developing and updating cordova plugins.",
-  "version": "0.0.1",
-  "repository": {
-    "url": "http://github.com/tqc/cordova-plugdev"
-  },
-  "main": "./plugdev-lib",
-  "bin": {
-    "plugdev": "plugdev-bin.js"
-  },
-  "dependencies": {
-    "xmldoc": "~0.1.2",
-    "ncp": "~0.5.0"
-  },
-  "devDependencies": {},
-  "optionalDependencies": {},
-  "engines": {
-    "node": ">=0.8"
-  }
+    "author": "Tom Clarkson ",
+    "name": "cordova-plugdev",
+    "description": "A tool to take the pain out of developing and updating cordova plugins by syncing changes you make in the Xcode project back to the plugin developemnt folder",
+    "version": "0.1.0",
+    "keywords": [
+        "cordova",
+        "phonegap",
+        "plugin"
+    ],
+    "repository": {
+        "url": "http://github.com/tqc/cordova-plugdev"
+    },
+    "main": "./plugdev-lib",
+    "bin": {
+        "plugdev": "plugdev-bin.js"
+    },
+    "dependencies": {
+        "xmldoc": "~0.1.2",
+        "ncp": "~0.5.0"
+    },
+    "devDependencies": {},
+    "optionalDependencies": {},
+    "license": "MIT",
+    "engines": {
+        "node": ">=0.10"
+    }
 }

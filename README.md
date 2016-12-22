@@ -1,5 +1,7 @@
 # Cordova Plugin Development Tool
 
+[ ![Codeship Status for tqc/plugdev](https://codeship.com/projects/2909ee80-1b31-0133-fbe3-22e6056c3449/status?branch=master)](https://codeship.com/projects/94446)
+
 A tool to take the pain out of developing and updating cordova plugins. Intended to work like npm link, you can edit plugin code either in the plugin development folder or in the app xcode project, and changes will be updated in both places.
 
 It can also be used to simplify the process of keeping published cordova plugins up to date.
